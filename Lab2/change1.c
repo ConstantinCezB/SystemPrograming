@@ -18,7 +18,7 @@ int main(int argc, char *argv[]){
         return 1;
     }
 
-    int fd = open("list1.txt", O_RDWR, 0644);
+    int fd = open(argv[1], O_RDWR, 0644);
 
     if(fd == -1){
         print("Cannot create or open file");
