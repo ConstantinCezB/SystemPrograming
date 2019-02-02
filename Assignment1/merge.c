@@ -14,6 +14,7 @@ Cezar Begu 104808191
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#include <stdio.h>
 
 //This will print messages to the consol.
 void print(char *message);
@@ -51,7 +52,11 @@ int main(int argc, char *argv[])
     readPictureInfo(&fd1, pic1Format, pic1X, pic1Y, pic1Scale);
     readPictureInfo(&fd2, pic2Format, pic2X, pic2Y, pic2Scale);
 
-    if (strcmp(pic1X, pic2X) < 0 || strcmp(pic1Y, pic2Y) < 0)
+    printf("pic1 x:%s y:%s\n", pic1X, pic1Y);
+    printf("pic2 x:%s y:%s\n", pic2X, pic2Y);
+
+    if (atoi(pic1X) < atoi(pic2X)
+     || atoi(pic1Y) < atoi(pic2Y))
     {
         print("Picture 2 cannot be bigger then picture 1.\n");
         return 1;
