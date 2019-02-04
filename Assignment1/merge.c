@@ -64,6 +64,12 @@ int main(int argc, char *argv[])
         return 1;
     }
 
+    if(strcmp(pic2Format, "P6") != 0 && strcmp(pic2Format, "P6") != 0)
+    {
+        print("The pictures are not p6!\n");
+        return 1;
+    }
+
     createMerge(&fd1, &fd2, &fdWrite, pic1Format, pic1X, pic1Y, pic1Scale, pic2X, pic2Y);
 
     close(fd1);
