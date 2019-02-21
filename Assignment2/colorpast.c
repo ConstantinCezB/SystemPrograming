@@ -8,20 +8,24 @@
 #include <fcntl.h>
 #include <sys/wait.h>
 
+static int fdWrite;
 
+bool checkIfInt (char *string);
 void print(char *message);
 bool colorMatch (char *color);
 void writeHeader (int *fdWrite, char *picX, char *picY);
 bool verifyFileName (char *fileName);
 void getColor (char **buf, char *color);
 void createFileContent (int *fdWrite, int picX, int picY, char *buf, char *buf1, char *buf2, char *buf3, char *buf4);
+void drawImage (int *fdWrite, char *picX, char *picY, char *buf, char *buf1, char *buf2, char *buf3, char *buf4);
 
 
-//TODO: writing code with fix char, writing correct code.
+//TODO: writing correct code.
 
 int main(int argc, char *argv[])
 {
-    if (argc != 7)
+
+    if (argc != 9)
     {
         print("too little or too many arguments!\n");
         exit(EXIT_FAILURE);
@@ -40,7 +44,13 @@ int main(int argc, char *argv[])
         exit(EXIT_FAILURE);
     }
 
-    int fdWrite = open(argv[1], O_CREAT | O_WRONLY, 0644);
+     if(!(checkIfInt(argv[7]) && checkIfInt(argv[8])))
+    {
+        print("You have to enter integer when talking about the size of the picture!\n");
+        exit(EXIT_FAILURE);
+    }
+
+    fdWrite = open(argv[1], O_CREAT | O_WRONLY, 0644);
 
     if (fdWrite == -1)
     {
@@ -55,8 +65,27 @@ int main(int argc, char *argv[])
     getColor (&buf3, argv[6]);
     getColor (&buf4, argv[2]);
 
-    writeHeader (&fdWrite, "1000", "1000"); 
-    createFileContent (&fdWrite, atoi("1000"), atoi("1000"), buf, buf1, buf2, buf3, buf4);
+    int rowsPerChild = atoi(argv[8]) / 10;
+
+    int pid;
+    for (int i = 1; i <10; i++)
+    {
+        pid = fork();
+        if (pid < 0)
+        {
+            perror("fork error");
+        }
+        if (pid == 0)
+        {
+            drawImage (&fdWrite, argv[7], argv[8], buf, buf1, buf2, buf3, buf4);
+            exit(EXIT_SUCCESS);
+        }
+        else
+        {
+            wait(NULL);
+        }
+        
+    }
 
     free(buf);
     free(buf1);
@@ -65,6 +94,18 @@ int main(int argc, char *argv[])
     free(buf4);
     close(fdWrite);
     exit(EXIT_SUCCESS);
+}
+
+bool checkIfInt (char *string)
+{
+    for(int i = 0; i < strlen(string); i++)
+    {
+        if(!(string[i] >= '0' && string[i] <= '9'))
+        {
+            return false;
+        }
+    }
+    return true;
 }
 
 void print(char *message)
@@ -190,6 +231,7 @@ void createFileContent (int *fdWrite, int picX, int picY, char *buf, char *buf1,
     const char *scale = "255";
     const int buffSize = 3;
     int totalPixel = picX * picY;
+    int halfPicX = picX/2, halfPicY = picY/2, oneFourthPicY = picY * (1.0/4.0), threeFourthPicY = picY * (3.0/4.0);
 
     int indexMiddle = 0, indexMiddleCount = 0, indexMiddleActivation = 0;
 
@@ -198,9 +240,9 @@ void createFileContent (int *fdWrite, int picX, int picY, char *buf, char *buf1,
 
     for (int i = 0; i < totalPixel; i++)
     {
-        if(indexX <= 500 - indexMiddle)
+        if(indexX <= halfPicX - indexMiddle)
         {
-            if (indexY <= 500)
+            if (indexY <= halfPicY)
             {
                 write(*fdWrite, buf, buffSize);
             }
@@ -209,9 +251,9 @@ void createFileContent (int *fdWrite, int picX, int picY, char *buf, char *buf1,
                 write(*fdWrite, buf1, buffSize);
             }
         }
-        else if (indexX > 500 + indexMiddle)
+        else if (indexX > halfPicX + indexMiddle)
         {
-            if (indexY <= 500)
+            if (indexY <= halfPicY)
             {
                 write(*fdWrite, buf2, buffSize);
             }
@@ -245,11 +287,11 @@ void createFileContent (int *fdWrite, int picX, int picY, char *buf, char *buf1,
         }
 
 
-        if(indexY >= 250 && indexY <= 500)
+        if(indexY >= oneFourthPicY && indexY <= halfPicY)
         {
             indexMiddleActivation = 1;
         }
-        else if (indexY > 500 && indexY <= 750)
+        else if (indexY > halfPicY && indexY <= threeFourthPicY)
         {
             indexMiddleActivation = 2;
         }
@@ -258,4 +300,10 @@ void createFileContent (int *fdWrite, int picX, int picY, char *buf, char *buf1,
             indexMiddleActivation = 0;
         }
     }
+}
+
+void drawImage (int *fdWrite, char *picX, char *picY, char *buf, char *buf1, char *buf2, char *buf3, char *buf4)
+{
+    writeHeader (fdWrite, picX, picY); 
+    createFileContent (fdWrite, atoi(picX), atoi(picY), buf, buf1, buf2, buf3, buf4);
 }
