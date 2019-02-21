@@ -13,7 +13,9 @@ void print(char *message);
 bool colorMatch (char *color);
 void writeHeader (int *fdWrite, char *picX, char *picY);
 bool verifyFileName (char *fileName);
-void createFileContent (int *fdWrite, int picX, int picY, int color) ;
+void getColor (char **buf, char *color);
+void createFileContent (int *fdWrite, int picX, int picY, char *buf, char *buf1, char *buf2, char *buf3, char *buf4);
+
 
 //TODO: writing code with fix char, writing correct code.
 
@@ -46,9 +48,21 @@ int main(int argc, char *argv[])
         exit(EXIT_FAILURE);
     }
 
-    writeHeader (&fdWrite, "1000", "1000"); 
-    createFileContent (&fdWrite, 1000, 1000, 111);
+    char *buf, *buf1, *buf2, *buf3, *buf4;
+    getColor (&buf, argv[3]);
+    getColor (&buf1, argv[5]);
+    getColor (&buf2, argv[4]);
+    getColor (&buf3, argv[6]);
+    getColor (&buf4, argv[2]);
 
+    writeHeader (&fdWrite, "1000", "1000"); 
+    createFileContent (&fdWrite, atoi("1000"), atoi("1000"), buf, buf1, buf2, buf3, buf4);
+
+    free(buf);
+    free(buf1);
+    free(buf2);
+    free(buf3);
+    free(buf4);
     close(fdWrite);
     exit(EXIT_SUCCESS);
 }
@@ -98,59 +112,92 @@ bool verifyFileName (char *fileName) {
         }
         if(fileName[i] == '.') fileExtension = true;
     }
-    extension[i] = '\0';
-
+    extension[index] = '\0';
     return strcmp(extension, "ppm") == 0; 
 }
 
-int colorCharToInt (char *color)
+void getColor (char **buf, char *color) 
 {
-    if (strcmp(color, "red")) 
-    {
-        return 16711680;
-    }
-    else if (strcmp(color, "green"))
-    {
-        return 65280;
-    }
+    *buf = malloc(3 * sizeof(char));
 
-
-    return 16711680;
+    if (*buf == NULL)return;
+    
+    if (strcmp(color, "red") == 0)
+    {
+        (*buf)[0] = 255;
+        (*buf)[1] = 0;
+        (*buf)[2] = 0;
+    }
+    else if (strcmp(color, "green") == 0)
+    {
+        (*buf)[0] = 0;
+        (*buf)[1] = 255;
+        (*buf)[2] = 0;
+    }
+    else if (strcmp(color, "blue") == 0)
+    {
+        (*buf)[0] = 0;
+        (*buf)[1] = 0;
+        (*buf)[2] = 255;
+    }
+    else if (strcmp(color, "yellow") == 0)
+    {
+        (*buf)[0] = 255;
+        (*buf)[1] = 255;
+        (*buf)[2] = 0;
+    }
+    else if (strcmp(color, "orange") == 0)
+    {
+        (*buf)[0] = 255;
+        (*buf)[1] = 140;
+        (*buf)[2] = 0;
+    }
+    else if (strcmp(color, "cyan") == 0)
+    {
+        (*buf)[0] = 0;
+        (*buf)[1] = 255;
+        (*buf)[2] = 255;
+    }
+    else if (strcmp(color, "magenta") == 0)
+    {
+        (*buf)[0] = 255;
+        (*buf)[1] = 0;
+        (*buf)[2] = 255;
+    }
+    else if (strcmp(color, "ocean") == 0)
+    {
+        (*buf)[0] = 0;
+        (*buf)[1] = 119;
+        (*buf)[2] = 190;
+    }
+    else if (strcmp(color, "violet") == 0)
+    {
+        (*buf)[0] = 148;
+        (*buf)[1] = 0;
+        (*buf)[2] = 211; 
+    }
+    else
+    {
+        (*buf)[0] = 0;
+        (*buf)[1] = 0;
+        (*buf)[2] = 0; 
+    }
+    
 }
 
-void createFileContent (int *fdWrite, int picX, int picY, int color) 
+void createFileContent (int *fdWrite, int picX, int picY, char *buf, char *buf1, char *buf2, char *buf3, char *buf4) 
 {   
     const char *scale = "255";
     const int buffSize = 3;
     int totalPixel = picX * picY;
-    char buf[buffSize];
-    buf[0] = 255;
-    buf[1] = 0;
-    buf[2] = 0;
-    char buf1[buffSize];
-    buf1[0] = 0;
-    buf1[1] = 255;
-    buf1[2] = 0;
-    char buf2[buffSize];
-    buf2[0] = 0;
-    buf2[1] = 0;
-    buf2[2] = 255;
-    char buf3[buffSize];
-    buf3[0] = 255;
-    buf3[1] = 255;
-    buf3[2] = 255;
-    char buf4[buffSize];
-    buf4[0] = 0;
-    buf4[1] = 0;
-    buf4[2] = 0;
 
     int indexMiddle = 0, indexMiddleCount = 0, indexMiddleActivation = 0;
 
     int indexX = 0, indexY = 0;
 
+
     for (int i = 0; i < totalPixel; i++)
     {
-        //  printf("%d\n", indexMiddleActivation);
         if(indexX <= 500 - indexMiddle)
         {
             if (indexY <= 500)
