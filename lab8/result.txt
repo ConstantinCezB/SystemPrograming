@@ -1,0 +1,4 @@
+a.out
+pipeexec.c
+result.txt
+results.txt
