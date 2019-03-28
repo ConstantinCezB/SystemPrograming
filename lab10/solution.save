@@ -1,0 +1,10 @@
+#!/bin/bash
+
+
+fileNameCourse1='60-212'
+fileNameCourse2='60-256'
+
+while read line
+do
+	
+done < $fileNameCourse1

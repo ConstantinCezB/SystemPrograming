@@ -1,0 +1,19 @@
+#!/bin/bash
+
+echo 'practice: shell command and array'
+
+directories=(`ls`)
+
+echo "list all directories and files in the current directories: ${directories[@]}"
+
+echo "total number of files and directories: ${#directories[@]}"
+
+echo "the first element in this list: ${directories[0]}"
+
+echo "all elements in this list:"
+
+
+for directory in "${directories[@]}"
+do
+	echo "${directory}"
+done

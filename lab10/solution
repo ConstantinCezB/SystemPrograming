@@ -1,0 +1,40 @@
+#!/bin/bash
+
+
+fileNameCourse1='60-212'
+fileNameCourse2='60-256'
+courseOnePass=()
+courseTwoPass=()
+
+while read line
+do
+	grades=`echo $line | awk '{print $2}'`
+	if [ $grades -ge 50 ]
+	then
+		courseOnePass+=(`echo $line | awk '{print $1}'`)
+	fi
+done < $fileNameCourse1
+
+while read line
+do
+	grades=`echo $line | awk '{print $2}'`
+	if [ $grades -ge 50 ]
+	then
+		courseTwoPass+=(`echo $line | awk '{print $1}'`)
+	fi
+done < $fileNameCourse2
+
+for id1 in ${courseOnePass[@]}
+do
+
+	for id2 in ${courseTwoPass[@]}
+	do
+
+		if [ $id1 -eq $id2 ]
+		then
+			echo $id1
+		fi
+
+	done
+
+done

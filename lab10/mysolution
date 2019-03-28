@@ -1,0 +1,14 @@
+#!/bin/bash
+
+if [ $# != 1 ]
+then
+	echo 'usage: mysolution [course-number]'
+	exit
+fi
+
+list_id=(`cat ./courses.txt | grep $1 | cut -f1 -d$'\t'`)
+
+for id in "${list_id[@]}"
+do
+	echo `cat emails.txt | grep $id | cut -f2 -d$'\t'`
+done
