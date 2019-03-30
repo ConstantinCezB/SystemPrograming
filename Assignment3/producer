@@ -1,0 +1,19 @@
+#!/bin/bash
+
+number=`cat storage`
+
+number=$(($number + 8))
+
+if [ $number -ge 100 ]
+then
+	echo 'from producer: now I will rest!'
+	exit
+fi
+
+echo $number > storage
+
+echo "from producer: current total is $number"
+
+./consumer
+
+
