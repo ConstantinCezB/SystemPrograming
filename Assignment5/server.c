@@ -23,13 +23,15 @@ int main(int argc, char *argv[])
     struct sockaddr_in server, client;
     int addrSize, ansSize, main_sock, client_sock;
 
-    // 1-2) Creating the socket and setting it up.
+    // 1) Creating the socket
     main_sock = socket(AF_INET, SOCK_STREAM, 0);
+
+    // 2) creating the sock addr
     server.sin_family = AF_INET;
     server.sin_addr.s_addr = INADDR_ANY;
     server.sin_port = htons(HTONS);
 
-    // 3) Binding the sock
+    // 3) Binding the socket and the sock addr
     if (bind(main_sock, (struct sockaddr *)&server, sizeof(server)) < 0)
     {
         perror("error with bind");
